@@ -14,7 +14,7 @@
 
 
 #### 项目视频
-[基于Spring的学生选课系统](https://www.bilibili.com/video/BV1c54y1G7W1)
+[基于Spring的学生选课系统](https://www.bilibili.com/video/BV1ui4y1Q7oS/)
 
 
 
