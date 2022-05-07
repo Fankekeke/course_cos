@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.cos.dao.StudentInfoMapper">
+
+    <!-- 分页查询学生信息 -->
+    <select id="getStudentInfoByPage" resultType="java.util.LinkedHashMap">
+        SELECT
+        si.id,
+        si.admin_id AS adminId,
+        si.code,
+        si.name,
+        si.student_id AS studentId,
+        si.sex,
+        si.discipline,
+        si.admin_class AS adminClass,
+        si.create_time AS createTime,
+        tu.USERNAME AS username,
+        tu.STATUS AS status,
+        tu.LAST_LOGIN_TIME AS lastTime
+        FROM
+        student_info si
+        LEFT JOIN t_user tu ON ( tu.USER_ID = si.admin_id )
+        WHERE 1 = 1
+        <if test="studentInfo.name != null and studentInfo.name != ''">
+            AND si.name LIKE CONCAT('%',#{studentInfo.name},'%')
+        </if>
+        <if test="studentInfo.studentId != null and studentInfo.studentId != ''">
+            AND si.student_id LIKE CONCAT('%',#{studentInfo.studentId},'%')
+        </if>
+        <if test="studentInfo.adminClass != null and studentInfo.adminClass != ''">
+            AND si.admin_class LIKE CONCAT('%',#{studentInfo.adminClass},'%')
+        </if>
+        <if test="studentInfo.discipline != null and studentInfo.discipline != ''">
+            AND si.discipline LIKE CONCAT('%',#{studentInfo.discipline},'%')
+        </if>
+        <if test="studentInfo.sex != null">
+            AND si.sex = #{studentInfo.sex}
+        </if>
+        ORDER BY si.create_time DESC
+    </select>
+
+    <!-- 根据学生获取选择的课程 -->
+    <select id="selectionByStudentId" resultType="java.util.LinkedHashMap">
+        SELECT
+        sei.create_time AS taskTime,
+        ci.course_nature AS courseNature,
+        ci.course_name AS courseName,
+        ci.start_time AS startTime,
+        ci.end_time AS endTime,
+        ci.gpa,
+        ci.credit,
+        ci.lessons_num AS lessonsNum,
+        ci.classroom,
+        ti.`name` AS teacherName
+        FROM
+        selection_info sei
+        LEFT JOIN course_info ci ON ( ci.id = sei.course_id )
+        LEFT JOIN teacher_info ti ON (ti.id = ci.teacher_id)
+        WHERE sei.student_id = #{ studentId }
+    </select>
+
+    <!-- 分页获取系统用户数据 -->
+    <select id="systemUserPage" resultType="java.util.LinkedHashMap">
+        SELECT
+        tu.USER_ID AS id,
+        tu.USERNAME AS username,
+        tu.`STATUS` AS userStatus,
+        tu.`CREATE_TIME` AS createTime,
+        tu.`LAST_LOGIN_TIME` AS lastTime,
+        tu.`USER_TYPE` AS userType
+        FROM
+        t_user tu
+        WHERE tu.USER_TYPE IS NOT NULL
+        AND tu.USER_TYPE != 1
+        <if test="user.username != null and user.username != ''">
+            AND tu.USERNAME LIKE CONCAT('%',#{user.username},'%')
+        </if>
+        <if test="user.userType != null and user.userType != ''">
+            AND tu.USER_TYPE = #{user.userType}
+        </if>
+        ORDER BY tu.`CREATE_TIME` DESC
+    </select>
+
+    <!-- 学生专业分布统计 -->
+    <select id="studentDisciplineRate" resultType="java.util.LinkedHashMap">
+        SELECT
+        count( 1 ) AS number,
+        discipline
+        FROM
+        student_info
+        WHERE discipline IS NOT NULL
+        GROUP BY
+        discipline
+    </select>
+
+    <!-- 课程预约情况 -->
+    <select id="courseRate" resultType="java.util.LinkedHashMap">
+        SELECT
+        COUNT( sei.course_id ) AS number,
+        ci.course_name AS courseName
+        FROM
+        course_info ci
+        LEFT JOIN selection_info sei ON ( ci.id = sei.course_id )
+        GROUP BY
+        ci.id
+    </select>
+</mapper>

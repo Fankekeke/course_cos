@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.cos.dao.CourseInfoMapper">
+
+    <!-- 分页查询课程信息 -->
+    <select id="getCourseInfoByPage" resultType="java.util.LinkedHashMap">
+        SELECT
+        ci.id,
+        ci.course_nature AS courseNature,
+        ci.course_name AS courseName,
+        ci.start_time AS startTime,
+        ci.end_time AS endTime,
+        ci.gpa,
+        ci.credit,
+        ci.lessons_num AS lessonsNum,
+        ci.classroom,
+        ci.content,
+        ci.teacher_id AS teacherId,
+        ci.create_date AS createDate,
+        ti.name AS teacherName,
+        ti.job_number AS jobNumber,
+        ti.admin_id AS adminId,
+        ti.sex,
+        COUNT(sei.course_id) AS studentNum
+        FROM
+        course_info ci
+        LEFT JOIN selection_info sei ON (sei.course_id = ci.id)
+        LEFT JOIN teacher_info ti ON ( ti.id = ci.teacher_id )
+        WHERE
+        1 = 1
+        <if test="courseInfo.courseNature != null and courseInfo.courseNature != ''">
+            AND ci.course_nature LIKE CONCAT('%',#{courseInfo.courseNature},'%')
+        </if>
+        <if test="courseInfo.courseName != null and courseInfo.courseName != ''">
+            AND ci.course_name LIKE CONCAT('%',#{courseInfo.courseName},'%')
+        </if>
+        <if test="courseInfo.classroom != null and courseInfo.classroom != ''">
+            AND ci.classroom LIKE CONCAT('%',#{courseInfo.classroom},'%')
+        </if>
+        <if test="courseInfo.teacherName != null and courseInfo.teacherName != ''">
+            AND ti.name LIKE CONCAT('%',#{courseInfo.teacherName},'%')
+        </if>
+        GROUP BY ci.id
+        ORDER BY ci.create_date DESC
+    </select>
+
+    <!-- 根据课程获取学生信息 -->
+    <select id="getStudentListByCourse" resultType="java.util.LinkedHashMap">
+        SELECT
+        sti.`name`,
+        sti.`student_id`,
+        sti.`sex`,
+        sti.discipline,
+        tu.LAST_LOGIN_TIME AS lastTime,
+        si.create_time AS createTime
+        FROM
+        selection_info si
+        LEFT JOIN student_info sti ON (sti.id = si.student_id)
+        LEFT JOIN t_user tu ON (tu.USER_ID = sti.admin_id)
+        WHERE
+        si.course_id = #{ courseId }
+    </select>
+
+    <!-- 根据教员获取课程分页信息 -->
+    <select id="getCoursePageByTeacher" resultType="java.util.LinkedHashMap">
+
+    </select>
+</mapper>
