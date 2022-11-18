@@ -62,7 +62,7 @@ fkkk
 
 #### 演示视频
 
-[项目视频：基于Spring的学生选课系统](https://www.bilibili.com/video/BV1ui4y1Q7oS/)
+[项目视频：基于SpringBoot的学生选课系统](https://www.bilibili.com/video/BV1ui4y1Q7oS/)
 
 #### 获取方式
 
