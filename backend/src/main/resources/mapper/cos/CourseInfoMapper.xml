@@ -41,7 +41,7 @@
             AND ti.name LIKE CONCAT('%',#{courseInfo.teacherName},'%')
         </if>
         GROUP BY ci.id
-        ORDER BY ci.create_date DESC
+        ORDER BY studentNum DESC
     </select>
 
     <!-- 根据课程获取学生信息 -->
