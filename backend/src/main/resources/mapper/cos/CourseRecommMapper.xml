@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.cos.dao.CourseRecommMapper">
+
+    <!-- 分页获取推荐课程信息 -->
+    <select id="selectCourseInfoPage" resultType="java.util.LinkedHashMap">
+        select
+        id,
+        discipline,
+        course_ids,
+        course_names,
+        remark,
+        create_date
+        from
+        course_recomm cr
+        where 1 = 1
+        <if test="courseRecomm.discipline != null and courseRecomm.discipline != ''">
+            AND cr.discipline LIKE CONCAT('%',#{courseRecomm.discipline},'%')
+        </if>
+        order by cr.create_date desc
+    </select>
+</mapper>
