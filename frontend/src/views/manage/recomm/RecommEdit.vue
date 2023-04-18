@@ -18,6 +18,21 @@
             ]"/>
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label='推荐课程' v-bind="formItemLayout">
+            <div>
+              <div :style="{ borderBottom: '1px solid #E9E9E9' }">
+                <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
+                  Check all
+                </a-checkbox>
+              </div>
+              <br />
+              <a-checkbox-group v-model="checkedList" :options="plainOptions" @change="onChange">
+                <span slot="label" slot-scope="{ value }" style="color: red">{{ value }}</span>
+              </a-checkbox-group>
+            </div>
+          </a-form-item>
+        </a-col>
         <a-col :span="24">
           <a-form-item label='备注' v-bind="formItemLayout">
             <a-textarea :rows="6" v-decorator="[
@@ -63,7 +78,11 @@ export default {
       formItemLayout,
       form: this.$form.createForm(this),
       loading: false,
-      courseList: []
+      courseList: [],
+      checkedList: [],
+      indeterminate: true,
+      checkAll: false,
+      plainOptions: []
     }
   },
   mounted () {
@@ -72,8 +91,34 @@ export default {
   methods: {
     selectCourseList () {
       this.$get('/cos/course-info/list').then((r) => {
-        this.courseList = r.data.data
+        this.plainOptions = r.data.data
       })
+    },
+    onChange (checkedList) {
+      this.indeterminate = !!checkedList.length && checkedList.length < this.plainOptions.length
+      this.checkAll = checkedList.length === this.plainOptions.length
+    },
+    onCheckAllChange (e) {
+      Object.assign(this, {
+        checkedList: e.target.checked ? this.plainOptions : [],
+        indeterminate: false,
+        checkAll: e.target.checked
+      })
+    },
+    responsibleInit (responsible) {
+      this.formLoading = false
+      if (responsible !== null && responsible !== '') {
+        let responsibleList = []
+        responsible.split(',').forEach((id, index) => {
+          responsibleList.push(parseInt(id))
+        })
+        this.checkedList = responsibleList
+        console.log(JSON.stringify(this.checkedList))
+        this.onChange(this.checkedList)
+      }
+      setTimeout(() => {
+        this.formLoading = true
+      }, 200)
     },
     setFormValues ({...recomm}) {
       this.rowId = recomm.id

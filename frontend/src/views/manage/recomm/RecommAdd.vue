@@ -19,11 +19,18 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='专业类型' v-bind="formItemLayout">
-            <a-input v-decorator="[
-            'discipline',
-            { rules: [{ required: true, message: '请输入专业类型!' }] }
-            ]"/>
+          <a-form-item label='推荐课程' v-bind="formItemLayout">
+            <div>
+              <div :style="{ borderBottom: '1px solid #E9E9E9' }">
+                <a-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
+                  Check all
+                </a-checkbox>
+              </div>
+              <br />
+              <a-checkbox-group v-model="checkedList" :options="plainOptions" @change="onChange">
+                <span slot="label" slot-scope="{ value }" style="color: red">{{ value }}</span>
+              </a-checkbox-group>
+            </div>
           </a-form-item>
         </a-col>
           <a-col :span="24">
@@ -71,7 +78,11 @@ export default {
       formItemLayout,
       form: this.$form.createForm(this),
       loading: false,
-      courseList: []
+      courseList: [],
+      checkedList: [],
+      indeterminate: true,
+      checkAll: false,
+      plainOptions: []
     }
   },
   mounted () {
@@ -80,7 +91,18 @@ export default {
   methods: {
     selectCourseList () {
       this.$get('/cos/course-info/list').then((r) => {
-        this.courseList = r.data.data
+        this.plainOptions = r.data.data
+      })
+    },
+    onChange (checkedList) {
+      this.indeterminate = !!checkedList.length && checkedList.length < this.plainOptions.length
+      this.checkAll = checkedList.length === this.plainOptions.length
+    },
+    onCheckAllChange (e) {
+      Object.assign(this, {
+        checkedList: e.target.checked ? this.plainOptions : [],
+        indeterminate: false,
+        checkAll: e.target.checked
       })
     },
     reset () {
@@ -97,7 +119,7 @@ export default {
     handleSubmit () {
       this.form.validateFields((err, values) => {
         if (!err) {
-          values.publisher = this.currentUser.userId
+          values.courseIds = this.checkedList.length > 0 ? this.checkedList.join(',') : null
           this.loading = true
           this.$post('/cos/course-recomm', {
             ...values
