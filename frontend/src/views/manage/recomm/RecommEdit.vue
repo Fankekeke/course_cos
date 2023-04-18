@@ -18,7 +18,7 @@
             ]"/>
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="24">
           <a-form-item label='推荐课程' v-bind="formItemLayout">
             <div>
               <div :style="{ borderBottom: '1px solid #E9E9E9' }">

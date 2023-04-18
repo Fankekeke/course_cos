@@ -79,15 +79,15 @@
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
-import recommAdd from './recommAdd'
-import recommEdit from './recommEdit'
+import RecommAdd from './RecommAdd'
+import RecommEdit from './RecommEdit'
 import {mapState} from 'vuex'
 import moment from 'moment'
 moment.locale('zh-cn')
 
 export default {
   name: 'Recomm',
-  components: {recommAdd, recommEdit, RangeDate},
+  components: {RecommAdd, RecommEdit, RangeDate},
   data () {
     return {
       advanced: false,
@@ -122,7 +122,7 @@ export default {
     columns () {
       return [{
         title: '对应专业',
-        dataIndex: 'discipline',
+        dataIndex: 'discipline'
       }, {
         title: '推荐课程',
         dataIndex: 'courseNames',
@@ -272,7 +272,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      this.$get('/cos/course-recomm/page', {
+      this.$get('/manage/course-recomm/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

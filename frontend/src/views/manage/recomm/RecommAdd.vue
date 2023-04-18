@@ -23,7 +23,7 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="24">
           <a-form-item label="推荐课程" v-bind="formItemLayout">
             <div>
               <div :style="{ borderBottom: '1px solid #E9E9E9' }">
@@ -66,30 +66,30 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 const formItemLayout = {
   labelCol: { span: 24 },
-  wrapperCol: { span: 24 },
-};
+  wrapperCol: { span: 24 }
+}
 export default {
-  name: "recommAdd",
+  name: 'recommAdd',
   props: {
     recommAddVisiable: {
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
     ...mapState({
-      currentUser: (state) => state.account.user,
+      currentUser: (state) => state.account.user
     }),
     show: {
       get: function () {
-        return this.recommAddVisiable;
+        return this.recommAddVisiable
       },
-      set: function () {},
-    },
+      set: function () {}
+    }
   },
-  data() {
+  data () {
     return {
       formItemLayout,
       form: this.$form.createForm(this),
@@ -98,62 +98,62 @@ export default {
       checkedList: [],
       indeterminate: true,
       checkAll: false,
-      plainOptions: [],
-    };
+      plainOptions: []
+    }
   },
-  mounted() {
-    this.selectCourseList();
+  mounted () {
+    this.selectCourseList()
   },
   methods: {
-    selectCourseList() {
-      this.$get("/cos/course-info/list").then((r) => {
-        this.plainOptions = r.data.data;
-      });
+    selectCourseList () {
+      this.$get('/cos/course-info/list').then((r) => {
+        this.plainOptions = r.data.data
+      })
     },
-    onChange(checkedList) {
+    onChange (checkedList) {
       this.indeterminate =
-        !!checkedList.length && checkedList.length < this.plainOptions.length;
-      this.checkAll = checkedList.length === this.plainOptions.length;
+        !!checkedList.length && checkedList.length < this.plainOptions.length
+      this.checkAll = checkedList.length === this.plainOptions.length
     },
-    onCheckAllChange(e) {
+    onCheckAllChange (e) {
       Object.assign(this, {
         checkedList: e.target.checked ? this.plainOptions : [],
         indeterminate: false,
-        checkAll: e.target.checked,
-      });
+        checkAll: e.target.checked
+      })
     },
-    reset() {
-      this.loading = false;
-      this.form.resetFields();
+    reset () {
+      this.loading = false
+      this.form.resetFields()
     },
-    onClose() {
-      this.reset();
-      this.$emit("close");
+    onClose () {
+      this.reset()
+      this.$emit('close')
     },
-    handleCancel() {
-      this.previewVisible = false;
+    handleCancel () {
+      this.previewVisible = false
     },
-    handleSubmit() {
+    handleSubmit () {
       this.form.validateFields((err, values) => {
         if (!err) {
           values.courseIds =
-            this.checkedList.length > 0 ? this.checkedList.join(",") : null;
-          this.loading = true;
-          this.$post("/cos/course-recomm", {
-            ...values,
+            this.checkedList.length > 0 ? this.checkedList.join(',') : null
+          this.loading = true
+          this.$post('/cos/course-recomm', {
+            ...values
           })
             .then((r) => {
-              this.reset();
-              this.$emit("success");
+              this.reset()
+              this.$emit('success')
             })
             .catch(() => {
-              this.loading = false;
-            });
+              this.loading = false
+            })
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style scoped>
