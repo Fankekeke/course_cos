@@ -4,7 +4,10 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CourseRecomm;
+import cc.mrbird.febs.cos.entity.StudentInfo;
+import cc.mrbird.febs.cos.service.ICourseInfoService;
 import cc.mrbird.febs.cos.service.ICourseRecommService;
+import cc.mrbird.febs.cos.service.IStudentInfoService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -27,8 +30,13 @@ public class CourseRecommController {
 
     private final ICourseRecommService courseRecommService;
 
+    private final IStudentInfoService studentInfoService;
+
+    private final ICourseInfoService courseInfoService;
+
     /**
      * 分页获取推荐课程信息
+     *
      * @param page
      * @param courseRecomm
      * @return
@@ -40,20 +48,30 @@ public class CourseRecommController {
 
     /**
      * 根据专业获取推荐课程
-     * @param discipline
-     * @return
+     *
+     * @param userId 用户ID
+     * @return 结果
      */
-    @GetMapping("/recomm/discipline")
-    public R selectCourseRecommByDiscipline(@RequestParam(required = false) String discipline) {
-        if (StrUtil.isEmpty(discipline)) {
+    @GetMapping("/recomm/discipline/{userId}")
+    public R selectCourseRecommByDiscipline(@PathVariable("userId") String userId) {
+        if (StrUtil.isEmpty(userId)) {
             return R.ok();
         }
-        CourseRecomm courseRecomm = courseRecommService.getOne(Wrappers.<CourseRecomm>lambdaQuery().eq(CourseRecomm::getDiscipline, discipline));
-        return R.ok(courseRecomm);
+        StudentInfo studentInfo = studentInfoService.getOne(Wrappers.<StudentInfo>lambdaQuery().eq(StudentInfo::getAdminId, userId));
+        if (studentInfo == null || StrUtil.isEmpty(studentInfo.getDiscipline())) {
+            return R.ok();
+        }
+        CourseRecomm courseRecomm = courseRecommService.getOne(Wrappers.<CourseRecomm>lambdaQuery().eq(CourseRecomm::getDiscipline, studentInfo.getDiscipline()));
+        if (courseRecomm == null || StrUtil.isEmpty(courseRecomm.getCourseIds())) {
+            return R.ok();
+        }
+        List<String> courseIds = StrUtil.splitTrim(courseRecomm.getCourseIds(), ",");
+        return R.ok(courseInfoService.listByIds(courseIds));
     }
 
     /**
      * 新增推荐课程信息
+     *
      * @param courseRecomm
      * @return
      */
@@ -69,6 +87,7 @@ public class CourseRecommController {
 
     /**
      * 修改推荐课程信息
+     *
      * @param courseRecomm
      * @return
      */
@@ -79,6 +98,7 @@ public class CourseRecommController {
 
     /**
      * 删除推荐课程信息
+     *
      * @param ids
      * @return
      */

@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -46,7 +48,18 @@ public class CourseInfoController {
      */
     @GetMapping("/list")
     public R list() {
-        return R.ok(courseInfoService.list());
+        List<CourseInfo> courseInfoList = courseInfoService.list();
+        // 返回数据
+        List<LinkedHashMap<String, Object>> result = new ArrayList<>();
+        courseInfoList.forEach(e -> {
+            result.add(new LinkedHashMap<String, Object>() {
+                {
+                    put("label", e.getCourseName());
+                    put("value", e.getId());
+                }
+            });
+        });
+        return R.ok(result);
     }
 
     /**
