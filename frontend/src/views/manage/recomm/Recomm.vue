@@ -121,18 +121,15 @@ export default {
     }),
     columns () {
       return [{
-        title: '标题',
-        dataIndex: 'title',
-        scopedSlots: { customRender: 'titleShow' },
-        width: 400
+        title: '对应专业',
+        dataIndex: 'discipline',
       }, {
-        title: '课程推荐内容',
-        dataIndex: 'content',
-        scopedSlots: { customRender: 'contentShow' },
-        width: 600
+        title: '推荐课程',
+        dataIndex: 'courseNames',
+        scopedSlots: { customRender: 'contentShow' }
       }, {
-        title: '发布时间',
-        dataIndex: 'date',
+        title: '备注',
+        dataIndex: 'remark',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -141,8 +138,8 @@ export default {
           }
         }
       }, {
-        title: '上传人',
-        dataIndex: 'userName',
+        title: '发布时间',
+        dataIndex: 'date',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -205,7 +202,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/recomm-info/' + ids).then(() => {
+          that.$delete('/cos/course-recomm/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -275,7 +272,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      this.$get('/cos/recomm-info/page', {
+      this.$get('/cos/course-recomm/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

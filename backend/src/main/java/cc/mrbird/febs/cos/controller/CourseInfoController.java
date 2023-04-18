@@ -30,6 +30,7 @@ public class CourseInfoController {
 
     /**
      * 根据课程获取学生信息
+     *
      * @param id
      * @return
      */
@@ -39,7 +40,18 @@ public class CourseInfoController {
     }
 
     /**
+     * 查询所有课程信息
+     *
+     * @return 结果
+     */
+    @GetMapping("/list")
+    public R list() {
+        return R.ok(courseInfoService.list());
+    }
+
+    /**
      * 取消课程绑定
+     *
      * @param courseId
      * @return
      */
@@ -50,6 +62,7 @@ public class CourseInfoController {
 
     /**
      * 绑定课程
+     *
      * @param courseId
      * @param userId
      * @return
@@ -62,6 +75,7 @@ public class CourseInfoController {
 
     /**
      * 根据教员获取课程分页信息
+     *
      * @param page
      * @param courseInfo
      * @return
@@ -73,6 +87,7 @@ public class CourseInfoController {
 
     /**
      * 分页查询课程信息
+     *
      * @param page
      * @param courseInfo
      * @return
@@ -84,6 +99,7 @@ public class CourseInfoController {
 
     /**
      * 添加新的课程信息
+     *
      * @param courseInfo
      * @return
      */
@@ -95,6 +111,7 @@ public class CourseInfoController {
 
     /**
      * 修改课程信息
+     *
      * @param courseInfo
      * @return
      */
@@ -105,6 +122,7 @@ public class CourseInfoController {
 
     /**
      * 删除课程信息
+     *
      * @param ids
      * @return
      */

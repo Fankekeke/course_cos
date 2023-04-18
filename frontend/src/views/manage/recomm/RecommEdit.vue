@@ -19,10 +19,10 @@
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item label='课程推荐内容' v-bind="formItemLayout">
+          <a-form-item label='备注' v-bind="formItemLayout">
             <a-textarea :rows="6" v-decorator="[
-            'content',
-             { rules: [{ required: true, message: '请输入名称!' }] }
+            'remark',
+             { rules: [{ required: true, message: '请输入备注!' }] }
             ]"/>
           </a-form-item>
         </a-col>
@@ -62,10 +62,19 @@ export default {
       rowId: null,
       formItemLayout,
       form: this.$form.createForm(this),
-      loading: false
+      loading: false,
+      courseList: []
     }
   },
+  mounted () {
+    this.selectCourseList()
+  },
   methods: {
+    selectCourseList () {
+      this.$get('/cos/course-info/list').then((r) => {
+        this.courseList = r.data.data
+      })
+    },
     setFormValues ({...recomm}) {
       this.rowId = recomm.id
       let fields = ['title', 'content']
@@ -94,7 +103,7 @@ export default {
         values.id = this.rowId
         if (!err) {
           this.loading = true
-          this.$put('/cos/recomm-info', {
+          this.$put('/cos/course-recomm', {
             ...values
           }).then((r) => {
             this.reset()

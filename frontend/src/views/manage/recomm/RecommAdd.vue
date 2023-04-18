@@ -18,11 +18,19 @@
             ]"/>
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label='专业类型' v-bind="formItemLayout">
+            <a-input v-decorator="[
+            'discipline',
+            { rules: [{ required: true, message: '请输入专业类型!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
           <a-col :span="24">
-          <a-form-item label='课程推荐内容' v-bind="formItemLayout">
+          <a-form-item label='备注' v-bind="formItemLayout">
             <a-textarea :rows="6" v-decorator="[
-            'content',
-             { rules: [{ required: true, message: '请输入名称!' }] }
+            'remark',
+             { rules: [{ required: true, message: '请输入备注!' }] }
             ]"/>
           </a-form-item>
         </a-col>
@@ -62,10 +70,19 @@ export default {
     return {
       formItemLayout,
       form: this.$form.createForm(this),
-      loading: false
+      loading: false,
+      courseList: []
     }
   },
+  mounted () {
+    this.selectCourseList()
+  },
   methods: {
+    selectCourseList () {
+      this.$get('/cos/course-info/list').then((r) => {
+        this.courseList = r.data.data
+      })
+    },
     reset () {
       this.loading = false
       this.form.resetFields()
@@ -82,7 +99,7 @@ export default {
         if (!err) {
           values.publisher = this.currentUser.userId
           this.loading = true
-          this.$post('/cos/recomm-info', {
+          this.$post('/cos/course-recomm', {
             ...values
           }).then((r) => {
             this.reset()
