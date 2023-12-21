@@ -1,4 +1,4 @@
-### 基于SpringBoot的学生选课系统 
+### 基于SpringBoot + Vue的学生选课系统 
 
 #### 安装环境
 
